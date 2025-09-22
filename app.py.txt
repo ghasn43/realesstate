@@ -1,0 +1,48 @@
+import streamlit as st
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# --- Title ---
+st.title("🏗 Saudi Arabia Building Cost Estimator Dashboard")
+st.write("Estimate building costs based on past Saudi projects")
+
+# --- User Inputs ---
+st.sidebar.header("Enter Project Details")
+
+location = st.sidebar.selectbox("📍 Location", ["Riyadh", "Jeddah", "Dammam"])
+year = st.sidebar.slider("📅 Year", 2021, 2025, 2025)
+building_type = st.sidebar.selectbox("🏢 Type", ["Residential", "Commercial"])
+area = st.sidebar.number_input("📐 Building Area (m²)", min_value=500, max_value=10000, value=3000)
+floors = st.sidebar.slider("🏗 Number of Floors", 1, 10, 4)
+quality = st.sidebar.selectbox("⭐ Quality", ["Standard", "Premium"])
+
+# --- Mock Cost Estimation (simple formula for demo) ---
+base_rate = 2000 if quality == "Standard" else 3000  # SAR per m²
+location_factor = {"Riyadh": 1.0, "Jeddah": 1.1, "Dammam": 0.95}
+type_factor = {"Residential": 1.0, "Commercial": 1.5}
+
+estimated_cost = area * base_rate * type_factor[building_type] * location_factor[location]
+cost_per_m2 = estimated_cost / area
+confidence_range = 0.08  # ±8%
+
+# --- Display Results ---
+st.subheader("📊 Estimation Results")
+st.success(f"💰 Estimated Total Cost: {estimated_cost:,.0f} SAR")
+st.write(f"📐 Cost per m²: {cost_per_m2:,.0f} SAR")
+st.write(f"📊 Confidence Range: ± {confidence_range*100:.0f}%")
+
+# --- Pie Chart: Cost Breakdown ---
+materials = estimated_cost * 0.55
+labor = estimated_cost * 0.30
+other = estimated_cost * 0.15
+
+sizes = [materials, labor, other]
+labels = ["Materials", "Labor", "Other"]
+colors = ["#66b3ff", "#99ff99", "#ffcc99"]
+
+fig, ax = plt.subplots()
+ax.pie(sizes, labels=labels, colors=colors, autopct='%1.0f%%')
+ax.set_title("Cost Breakdown")
+
+st.pyplot(fig)
