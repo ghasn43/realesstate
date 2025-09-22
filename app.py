@@ -221,3 +221,4 @@ for bar, value in zip(bars, converted_sizes):
 
 st.pyplot(fig_bar)
 
+
